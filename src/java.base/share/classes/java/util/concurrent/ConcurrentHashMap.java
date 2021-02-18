@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Spliterator;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
@@ -4517,19 +4518,17 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
          * @return a string representation of this collection
          */
         public final String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append('[');
             Iterator<E> it = iterator();
-            if (it.hasNext()) {
-                for (;;) {
-                    Object e = it.next();
-                    sb.append(e == this ? "(this Collection)" : e);
-                    if (!it.hasNext())
-                        break;
-                    sb.append(',').append(' ');
-                }
+            if (!it.hasNext()) {
+                return "[]";
             }
-            return sb.append(']').toString();
+
+            StringJoiner sb = new StringJoiner(", ", "[", "]");
+            while (it.hasNext()) {
+                E e = it.next();
+                sb.add(e == this ? "(this Collection)" : String.valueOf(e));
+            }
+            return sb.toString();
         }
 
         public final boolean containsAll(Collection<?> c) {

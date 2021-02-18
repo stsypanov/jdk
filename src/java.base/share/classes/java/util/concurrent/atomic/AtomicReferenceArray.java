@@ -40,6 +40,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 
@@ -301,18 +302,15 @@ public class AtomicReferenceArray<E> implements java.io.Serializable {
      * @return the String representation of the current values of array
      */
     public String toString() {
-        int iMax = array.length - 1;
-        if (iMax == -1)
+        int length = this.array.length;
+        if (length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(get(i));
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(',').append(' ');
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (int i = 0; i < length; i++) {
+            sj.add(String.valueOf(get(i)));
         }
+        return sj.toString();
     }
 
     /**

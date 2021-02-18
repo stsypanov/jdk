@@ -4671,18 +4671,15 @@ public class Arrays {
     public static String toString(long[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (long l : a) {
+            sj.add(Long.toString(l));
         }
+        return sj.toString();
     }
 
     /**
@@ -4701,18 +4698,15 @@ public class Arrays {
     public static String toString(int[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (int i : a) {
+            sj.add(Integer.toString(i));
         }
+        return sj.toString();
     }
 
     /**
@@ -4731,18 +4725,15 @@ public class Arrays {
     public static String toString(short[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (short s : a) {
+            sj.add(Short.toString(s));
         }
+        return sj.toString();
     }
 
     /**
@@ -4761,18 +4752,15 @@ public class Arrays {
     public static String toString(char[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (char c : a) {
+            sj.add(String.valueOf(c));
         }
+        return sj.toString();
     }
 
     /**
@@ -4791,18 +4779,15 @@ public class Arrays {
     public static String toString(byte[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (byte b : a) {
+            sj.add(Byte.toString(b));
         }
+        return sj.toString();
     }
 
     /**
@@ -4821,18 +4806,15 @@ public class Arrays {
     public static String toString(boolean[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (boolean b : a) {
+            sj.add(Boolean.toString(b));
         }
+        return sj.toString();
     }
 
     /**
@@ -4852,18 +4834,14 @@ public class Arrays {
         if (a == null)
             return "null";
 
-        int iMax = a.length - 1;
-        if (iMax == -1)
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (float f : a) {
+            sj.add(Float.toString(f));
         }
+        return sj.toString();
     }
 
     /**
@@ -4882,18 +4860,15 @@ public class Arrays {
     public static String toString(double[] a) {
         if (a == null)
             return "null";
-        int iMax = a.length - 1;
-        if (iMax == -1)
+
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(a[i]);
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (double d : a) {
+            sj.add(Double.toString(d));
         }
+        return sj.toString();
     }
 
     /**
@@ -4916,18 +4891,14 @@ public class Arrays {
         if (a == null)
             return "null";
 
-        int iMax = a.length - 1;
-        if (iMax == -1)
+        if (a.length == 0)
             return "[]";
 
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            b.append(String.valueOf(a[i]));
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+        for (Object o : a) {
+            sj.add(String.valueOf(o));
         }
+        return sj.toString();
     }
 
     /**

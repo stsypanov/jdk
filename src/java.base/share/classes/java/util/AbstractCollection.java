@@ -450,15 +450,12 @@ public abstract class AbstractCollection<E> implements Collection<E> {
         if (! it.hasNext())
             return "[]";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append('[');
-        for (;;) {
+        StringJoiner sb = new StringJoiner(", ", "[", "]");
+        while (it.hasNext()) {
             E e = it.next();
-            sb.append(e == this ? "(this Collection)" : e);
-            if (! it.hasNext())
-                return sb.append(']').toString();
-            sb.append(',').append(' ');
+            sb.add(e == this ? "(this Collection)" : String.valueOf(e));
         }
+        return sb.toString();
     }
 
 }
