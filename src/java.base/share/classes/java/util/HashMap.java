@@ -1013,6 +1013,18 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     throw new ConcurrentModificationException();
             }
         }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            Objects.requireNonNull(c);
+            boolean modified = false;
+
+            for (Object o : c) {
+                modified |= remove(o);
+            }
+
+            return modified;
+        }
     }
 
     /**
