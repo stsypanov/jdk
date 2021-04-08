@@ -57,8 +57,8 @@ public class DataInputStream extends FilterInputStream implements DataInput {
     /**
      * working arrays initialized on demand by readUTF
      */
-    private byte bytearr[] = new byte[80];
-    private char chararr[] = new char[80];
+    private byte[] bytearr = new byte[80];
+    private char[] chararr = new char[80];
 
     /**
      * Reads some number of bytes from the contained input stream and
@@ -98,7 +98,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      * @see        java.io.FilterInputStream#in
      * @see        java.io.InputStream#read(byte[], int, int)
      */
-    public final int read(byte b[]) throws IOException {
+    public final int read(byte[] b) throws IOException {
         return in.read(b, 0, b.length);
     }
 
@@ -147,7 +147,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      * @see        java.io.FilterInputStream#in
      * @see        java.io.InputStream#read(byte[], int, int)
      */
-    public final int read(byte b[], int off, int len) throws IOException {
+    public final int read(byte[] b, int off, int len) throws IOException {
         return in.read(b, off, len);
     }
 
@@ -168,7 +168,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      *          another I/O error occurs.
      * @see     java.io.FilterInputStream#in
      */
-    public final void readFully(byte b[]) throws IOException {
+    public final void readFully(byte[] b) throws IOException {
         readFully(b, 0, b.length);
     }
 
@@ -194,7 +194,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      *             another I/O error occurs.
      * @see        java.io.FilterInputStream#in
      */
-    public final void readFully(byte b[], int off, int len) throws IOException {
+    public final void readFully(byte[] b, int off, int len) throws IOException {
         Objects.checkFromIndexSize(off, len, b.length);
         int n = 0;
         while (n < len) {
@@ -315,11 +315,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      * @see        java.io.FilterInputStream#in
      */
     public final short readShort() throws IOException {
-        int ch1 = in.read();
-        int ch2 = in.read();
-        if ((ch1 | ch2) < 0)
-            throw new EOFException();
-        return (short)((ch1 << 8) + (ch2 << 0));
+        return (short) readUnsignedShort();
     }
 
     /**
@@ -399,7 +395,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
         return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
 
-    private byte readBuffer[] = new byte[8];
+    private byte[] readBuffer = new byte[8];
 
     /**
      * See the general contract of the {@code readLong}
@@ -474,7 +470,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
         return Double.longBitsToDouble(readLong());
     }
 
-    private char lineBuffer[];
+    private char[] lineBuffer;
 
     /**
      * See the general contract of the {@code readLine}
@@ -505,7 +501,7 @@ public class DataInputStream extends FilterInputStream implements DataInput {
      */
     @Deprecated
     public final String readLine() throws IOException {
-        char buf[] = lineBuffer;
+        char[] buf = lineBuffer;
 
         if (buf == null) {
             buf = lineBuffer = new char[128];
