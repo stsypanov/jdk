@@ -2122,8 +2122,7 @@ public final class URI
     // -- Normalization, resolution, and relativization --
 
     // RFC2396 5.2 (6)
-    private static String resolvePath(String base, String child,
-                                      boolean absolute)
+    private static String resolvePath(String base, String child)
     {
         int i = base.lastIndexOf('/');
         int cn = child.length();
@@ -2134,13 +2133,9 @@ public final class URI
             if (i >= 0)
                 path = base.substring(0, i + 1);
         } else {
-            StringBuilder sb = new StringBuilder(base.length() + cn);
-            // 5.2 (6a)
-            if (i >= 0)
-                sb.append(base, 0, i + 1);
-            // 5.2 (6b)
-            sb.append(child);
-            path = sb.toString();
+            path = i >= 0
+                    ? base.substring(0, i + 1) + child // 5.2 (6a)
+                    : child;                           // 5.2 (6b)
         }
 
         // 5.2 (6c-f)
@@ -2201,7 +2196,7 @@ public final class URI
                 ru.path = child.path;
             } else {
                 // 5.2 (6): Resolve relative path
-                ru.path = resolvePath(base.path, cp, base.isAbsolute());
+                ru.path = resolvePath(base.path, cp);
             }
         } else {
             ru.authority = child.authority;
@@ -2924,7 +2919,6 @@ public final class URI
                 continue;
             }
             bb.clear();
-            int ui = i;
             for (;;) {
                 assert (n - i >= 2);
                 bb.put(decode(s.charAt(++i), s.charAt(++i)));
