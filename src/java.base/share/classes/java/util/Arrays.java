@@ -8716,4 +8716,17 @@ public class Arrays {
 
         return aLength != bLength ? length : -1;
     }
+
+    /**
+     * Returns array element type if {@code type} represents an array or {@code type} otherwise.
+     *
+     * @param type instance of {@link java.lang.Class} to be introspected
+     * @return array element type if {@code type} represents an array or {@code type} otherwise.
+     */
+    public static Class<?> arrayElementType(Class<?> type) {
+        while (type.isArray()) {
+            type = type.getComponentType();
+        }
+        return type;
+    }
 }

@@ -27,6 +27,7 @@ package sun.invoke.util;
 
 import java.lang.reflect.Modifier;
 import static java.lang.reflect.Modifier.*;
+import java.util.Arrays;
 import java.util.Objects;
 import jdk.internal.reflect.Reflection;
 
@@ -277,7 +278,7 @@ public class VerifyAccess {
         if (type == refc) {
             return true;  // easy check
         }
-        while (type.isArray())  type = type.getComponentType();
+        type = Arrays.arrayElementType(type);
         if (type.isPrimitive() || type == Object.class) {
             return true;
         }

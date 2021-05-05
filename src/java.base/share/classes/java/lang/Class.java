@@ -1237,11 +1237,7 @@ public final class Class<T> implements java.io.Serializable,
     private Class<?> elementType() {
         if (!isArray()) return null;
 
-        Class<?> c = this;
-        while (c.isArray()) {
-            c = c.getComponentType();
-        }
-        return c;
+        return Arrays.arrayElementType(this);
     }
 
     /**

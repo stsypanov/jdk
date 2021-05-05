@@ -270,10 +270,7 @@ class InvokerBytecodeGenerator {
         // unique static variable name
         String name;
         if (DUMP_CLASS_FILES) {
-            Class<?> c = arg.getClass();
-            while (c.isArray()) {
-                c = c.getComponentType();
-            }
+            Class<?> c = Arrays.arrayElementType(arg.getClass());
             name = "_DATA_" + c.getSimpleName() + "_" + classData.size();
         } else {
             name = "_D_" + classData.size();

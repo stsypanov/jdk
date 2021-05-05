@@ -29,11 +29,11 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.util.StaticProperty;
 
@@ -634,10 +634,7 @@ public interface ObjectInputFilter {
                             // As revised; do not check the component type for arrays
                             return Status.UNDECIDED;
                         }
-                        do {
-                            // Arrays are decided based on the component type
-                            clazz = clazz.getComponentType();
-                        } while (clazz.isArray());
+                        clazz = Arrays.arrayElementType(clazz);
                     }
 
                     if (clazz.isPrimitive())  {

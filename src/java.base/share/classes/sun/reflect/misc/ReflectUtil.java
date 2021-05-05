@@ -30,6 +30,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import jdk.internal.reflect.Reflection;
 import sun.security.util.SecurityConstants;
 
@@ -124,9 +125,7 @@ public final class ReflectUtil {
      * NOTE: should only be called if a SecurityManager is installed
      */
     private static void privateCheckPackageAccess(SecurityManager s, Class<?> clazz) {
-        while (clazz.isArray()) {
-            clazz = clazz.getComponentType();
-        }
+        clazz = Arrays.arrayElementType(clazz);
 
         String pkg = clazz.getPackageName();
         if (pkg != null && !pkg.isEmpty()) {

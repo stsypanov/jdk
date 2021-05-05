@@ -754,7 +754,7 @@ public class Proxy implements java.io.Serializable {
 
         private static void addElementType(HashSet<Class<?>> types,
                                            Class<?> cls) {
-            var type = getElementType(cls);
+            var type = Arrays.arrayElementType(cls);
             if (!type.isPrimitive()) {
                 types.add(type);
             }
@@ -876,14 +876,6 @@ public class Proxy implements java.io.Serializable {
                 throw new IllegalArgumentException(c.getName() +
                         " referenced from a method is not visible from class loader");
             }
-        }
-
-        private static Class<?> getElementType(Class<?> type) {
-            Class<?> e = type;
-            while (e.isArray()) {
-                e = e.getComponentType();
-            }
-            return e;
         }
 
         private static final ClassLoaderValue<Module> dynProxyModules =
