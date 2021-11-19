@@ -16,5 +16,6 @@ NashornProfile.txt
 **/JTreport/**
 **/JTwork/**
 /src/utils/LogCompilation/target/
+/src/utils/hsdis/build/
 /.project/
 /.settings/
