@@ -1440,12 +1440,7 @@ search:
 
             Constructor<?> constructor = Stream.of(constructors)
                     .filter(c -> Modifier.isPublic(c.getModifiers()))
-                    .filter(c -> {
-                        Class<?>[] ptypes = c.getParameterTypes();
-                        return ptypes != null
-                                && ptypes.length == 1
-                                && clazz.equals(ptypes[0]);
-                    })
+                    .filter(c -> c.getParameterCount() == 1 && clazz.equals(c.getParameterTypes()[0]))
                     .findFirst()
                     .orElseThrow(() ->
                             new IOException("can't find <init>(L"+ clazz + ";)V for class: " + dfrc.getName()));

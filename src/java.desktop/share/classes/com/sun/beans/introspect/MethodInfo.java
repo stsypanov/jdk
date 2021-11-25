@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -114,11 +114,13 @@ final class MethodInfo {
             if (cmp != 0) {
                 return cmp;
             }
+            int aCount = a.getParameterCount();
+            int bCount = b.getParameterCount();
+            if (aCount != bCount) {
+                return aCount - bCount;
+            }
             final Class<?>[] aparams = a.getParameterTypes();
             final Class<?>[] bparams = b.getParameterTypes();
-            if (aparams.length != bparams.length) {
-                return aparams.length - bparams.length;
-            }
             for (int i = 0; i < aparams.length; ++i) {
                 final Class<?> aparam = aparams[i];
                 final Class<?> bparam = bparams[i];

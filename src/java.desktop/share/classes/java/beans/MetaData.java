@@ -1298,8 +1298,8 @@ static final class sun_swing_PrintColorUIResource_PersistenceDelegate extends Pe
     }
 
     private static boolean isValid(Constructor<?> constructor, String[] names) {
-        Class<?>[] parameters = constructor.getParameterTypes();
-        if (names.length != parameters.length) {
+        int parameterCount = constructor.getParameterCount();
+        if (names.length != parameterCount) {
             return false;
         }
         for (String name : names) {

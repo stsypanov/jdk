@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2002, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -416,16 +416,15 @@ public class MBeanServerInvocationHandler implements InvocationHandler {
     private boolean shouldDoLocally(Object proxy, Method method) {
         final String methodName = method.getName();
         if ((methodName.equals("hashCode") || methodName.equals("toString"))
-            && method.getParameterTypes().length == 0
+            && method.getParameterCount() == 0
             && isLocal(proxy, method))
             return true;
         if (methodName.equals("equals")
-            && Arrays.equals(method.getParameterTypes(),
-                             new Class<?>[] {Object.class})
+            && Object.class.equals(method.getParameterTypes()[0])
             && isLocal(proxy, method))
             return true;
         if (methodName.equals("finalize")
-            && method.getParameterTypes().length == 0) {
+            && method.getParameterCount() == 0) {
             return true;
         }
         return false;

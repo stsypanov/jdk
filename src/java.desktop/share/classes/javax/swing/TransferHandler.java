@@ -855,12 +855,11 @@ public class TransferHandler implements Serializable {
                 // read-only property. ignore
                 return false;
             }
-            Class<?>[] params = writer.getParameterTypes();
-            if (params.length != 1) {
+            if (writer.getParameterCount() != 1) {
                 // zero or more than one argument, ignore
                 return false;
             }
-            DataFlavor flavor = getPropertyDataFlavor(params[0], t.getTransferDataFlavors());
+            DataFlavor flavor = getPropertyDataFlavor(writer.getParameterTypes()[0], t.getTransferDataFlavors());
             if (flavor != null) {
                 try {
                     Object value = t.getTransferData(flavor);
@@ -953,12 +952,11 @@ public class TransferHandler implements Serializable {
                 // read-only property. ignore
                 return false;
             }
-            Class<?>[] params = writer.getParameterTypes();
-            if (params.length != 1) {
+            if (writer.getParameterCount() != 1) {
                 // zero or more than one argument, ignore
                 return false;
             }
-            DataFlavor flavor = getPropertyDataFlavor(params[0], transferFlavors);
+            DataFlavor flavor = getPropertyDataFlavor(writer.getParameterTypes()[0], transferFlavors);
             if (flavor != null) {
                 return true;
             }
@@ -1073,9 +1071,9 @@ public class TransferHandler implements Serializable {
                 Method reader = props[i].getReadMethod();
 
                 if (reader != null) {
-                    Class<?>[] params = reader.getParameterTypes();
+                    int paramCount = reader.getParameterCount();
 
-                    if (params == null || params.length == 0) {
+                    if (paramCount == 0) {
                         // found the desired descriptor
                         return props[i];
                     }

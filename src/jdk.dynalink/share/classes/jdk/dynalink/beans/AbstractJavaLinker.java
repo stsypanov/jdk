@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -124,14 +124,14 @@ abstract class AbstractJavaLinker implements GuardingDynamicLinker {
             // Add method
             addMember(name, method, methods);
             // Add the method as a property getter and/or setter
-            if(name.startsWith("get") && name.length() > 3 && method.getParameterTypes().length == 0) {
+            if(name.startsWith("get") && name.length() > 3 && method.getParameterCount() == 0) {
                 // Property getter
                 setPropertyGetter(method, 3);
-            } else if(name.startsWith("is") && name.length() > 2 && method.getParameterTypes().length == 0 &&
+            } else if(name.startsWith("is") && name.length() > 2 && method.getParameterCount() == 0 &&
                     method.getReturnType() == boolean.class) {
                 // Boolean property getter
                 setPropertyGetter(method, 2);
-            } else if(name.startsWith("set") && name.length() > 3 && method.getParameterTypes().length == 1) {
+            } else if(name.startsWith("set") && name.length() > 3 && method.getParameterCount() == 1) {
                 // Property setter
                 addMember(decapitalize(name.substring(3)), method, propertySetters);
             }

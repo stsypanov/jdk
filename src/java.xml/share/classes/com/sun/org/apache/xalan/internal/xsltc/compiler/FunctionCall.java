@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021, Oracle and/or its affiliates. All rights reserved.
  */
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -998,7 +998,7 @@ class FunctionCall extends Expression {
                 // Is it public and same number of args ?
                 if (Modifier.isPublic(mods)
                     && methods[i].getName().equals(methodName)
-                    && methods[i].getParameterTypes().length == nArgs)
+                    && methods[i].getParameterCount() == nArgs)
                 {
                   if (result == null) {
                     result = new ArrayList<>();
@@ -1039,7 +1039,7 @@ class FunctionCall extends Expression {
             for (Constructor<?> constructor : constructors) {
                 final int mods = constructor.getModifiers();
                 // Is it public, static and same number of args ?
-                if (Modifier.isPublic(mods) && constructor.getParameterTypes().length == nArgs) {
+                if (Modifier.isPublic(mods) && constructor.getParameterCount() == nArgs) {
                     if (result == null) {
                         result = new ArrayList<>();
                     }   result.add(constructor);

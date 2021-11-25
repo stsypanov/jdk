@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -132,7 +132,7 @@ class MBeanAnalyzer<M> {
            us to give getter and setter together to visitAttribute. */
         for (Method m : methods) {
             final String name = m.getName();
-            final int nParams = m.getParameterTypes().length;
+            final int nParams = m.getParameterCount();
 
             final M cm = introspector.mFrom(m);
 
@@ -208,10 +208,13 @@ class MBeanAnalyzer<M> {
         public int compare(Method a, Method b) {
             final int cmp = a.getName().compareTo(b.getName());
             if (cmp != 0) return cmp;
+            int aCount = a.getParameterCount();
+            int bCount = b.getParameterCount();
+            if (aCount != bCount) {
+                return aCount - bCount;
+            }
             final Class<?>[] aparams = a.getParameterTypes();
             final Class<?>[] bparams = b.getParameterTypes();
-            if (aparams.length != bparams.length)
-                return aparams.length - bparams.length;
             if (!Arrays.equals(aparams, bparams)) {
                 return Arrays.toString(aparams).
                         compareTo(Arrays.toString(bparams));
@@ -255,6 +258,9 @@ class MBeanAnalyzer<M> {
 
             // Methods that don't have the same name can't override each other
             if (!m0.getName().equals(m1.getName())) continue;
+
+            // Methods with different number of parameters can't override each other
+            if (m0.getParameterCount() != m1.getParameterCount()) continue;
 
             // Methods that have the same name and same signature override
             // each other. In that case, the second method overrides the first,

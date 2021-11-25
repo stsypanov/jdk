@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -176,9 +176,8 @@ public final class MethodFinder extends AbstractFinder<Method> {
             Class<?> type = (Class<?>) pt.getRawType();
             for (Method m : type.getMethods()) {
                 if (m.getName().equals(name)) {
-                    Class<?>[] pts = m.getParameterTypes();
-                    if (pts.length == params.length) {
-                        if (Arrays.equals(params, pts)) {
+                    if (m.getParameterCount() == params.length) {
+                        if (Arrays.equals(params, m.getParameterTypes())) {
                             return findAccessibleMethod(m);
                         }
                         Type[] gpts = m.getGenericParameterTypes();
