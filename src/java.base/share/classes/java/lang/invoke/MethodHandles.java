@@ -48,7 +48,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ReflectPermission;
 import java.nio.ByteOrder;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -5246,11 +5245,7 @@ assertEquals("yz", (String) d0.invokeExact(123, "x", "y", "z"));
      *                  or if the new method handle's type would have too many parameters
      */
     public static MethodHandle dropArguments(MethodHandle target, int pos, List<Class<?>> valueTypes) {
-        return dropArguments0(target, pos, copyTypes(valueTypes.toArray()));
-    }
-
-    private static List<Class<?>> copyTypes(Object[] array) {
-        return Arrays.asList(Arrays.copyOf(array, array.length, Class[].class));
+        return dropArguments0(target, pos, new ArrayList<>(valueTypes));
     }
 
     private static MethodHandle dropArguments0(MethodHandle target, int pos, List<Class<?>> valueTypes) {
@@ -5327,13 +5322,13 @@ assertEquals("xz", (String) d12.invokeExact("x", 12, true, "z"));
      *                  <a href="MethodHandle.html#maxarity">too many parameters</a>
      */
     public static MethodHandle dropArguments(MethodHandle target, int pos, Class<?>... valueTypes) {
-        return dropArguments0(target, pos, copyTypes(valueTypes));
+        return dropArguments0(target, pos, List.of(valueTypes));
     }
 
     // private version which allows caller some freedom with error handling
     private static MethodHandle dropArgumentsToMatch(MethodHandle target, int skip, List<Class<?>> newTypes, int pos,
                                       boolean nullOnFailure) {
-        newTypes = copyTypes(newTypes.toArray());
+        newTypes = new ArrayList<>(newTypes);
         List<Class<?>> oldTypes = target.type().parameterList();
         int match = oldTypes.size();
         if (skip != 0) {
@@ -6742,7 +6737,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
     private static List<Class<?>> buildCommonSuffix(List<MethodHandle> init, List<MethodHandle> step, List<MethodHandle> pred, List<MethodHandle> fini, int cpSize) {
         final List<Class<?>> longest1 = longestParameterList(Stream.of(step, pred, fini).flatMap(List::stream), cpSize);
         final List<Class<?>> longest2 = longestParameterList(init.stream(), 0);
-        return longestParameterList(Arrays.asList(longest1, longest2));
+        return longestParameterList(List.of(longest1, longest2));
     }
 
     private static void loopChecks1b(List<MethodHandle> init, List<Class<?>> commonSuffix) {
@@ -7358,7 +7353,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         if (outerList.isEmpty()) {
             // special case; take lists from end handle
             outerList = end.type().parameterList();
-            innerList = bodyType.insertParameterTypes(vsize + 1, outerList).parameterList();
+            bodyType.insertParameterTypes(vsize + 1, outerList);
         }
         MethodType expected = methodType(counterType, outerList);
         if (!start.type().effectivelyIdenticalParameters(0, outerList)) {
@@ -7599,7 +7594,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
                 // special case; if the iterator handle is null and the body handle
                 // only declares V and T then the external parameter list consists
                 // of Iterable
-                externalParamList = Arrays.asList(Iterable.class);
+                externalParamList = List.of(Iterable.class);
                 iterableType = Iterable.class;
             } else {
                 // special case; if the iterator handle is null and the external
