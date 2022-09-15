@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2001, 2022, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,6 +25,7 @@
 
 package jdk.internal.reflect;
 
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -69,14 +70,12 @@ class MethodAccessorGenerator extends AccessorGenerator {
                                          String   name,
                                          Class<?>[] parameterTypes,
                                          Class<?>   returnType,
-                                         Class<?>[] checkedExceptions,
                                          int modifiers)
     {
         return (MethodAccessor) generate(declaringClass,
                                          name,
                                          parameterTypes,
                                          returnType,
-                                         checkedExceptions,
                                          modifiers,
                                          false,
                                          false,
@@ -84,16 +83,15 @@ class MethodAccessorGenerator extends AccessorGenerator {
     }
 
     /** This routine is not thread-safe */
-    public ConstructorAccessor generateConstructor(Class<?> declaringClass,
-                                                   Class<?>[] parameterTypes,
-                                                   Class<?>[] checkedExceptions,
-                                                   int modifiers)
+    public ConstructorAccessor generateConstructor(Constructor<?> c)
     {
+        Class<?> declaringClass = c.getDeclaringClass();
+        Class<?>[] parameterTypes = c.getParameterTypes();
+        int modifiers = c.getModifiers();
         return (ConstructorAccessor) generate(declaringClass,
                                               "<init>",
                                               parameterTypes,
                                               Void.TYPE,
-                                              checkedExceptions,
                                               modifiers,
                                               true,
                                               false,
@@ -104,7 +102,6 @@ class MethodAccessorGenerator extends AccessorGenerator {
     public SerializationConstructorAccessorImpl
     generateSerializationConstructor(Class<?> declaringClass,
                                      Class<?>[] parameterTypes,
-                                     Class<?>[] checkedExceptions,
                                      int modifiers,
                                      Class<?> targetConstructorClass)
     {
@@ -113,7 +110,6 @@ class MethodAccessorGenerator extends AccessorGenerator {
                      "<init>",
                      parameterTypes,
                      Void.TYPE,
-                     checkedExceptions,
                      modifiers,
                      true,
                      true,
@@ -126,7 +122,6 @@ class MethodAccessorGenerator extends AccessorGenerator {
                                        String name,
                                        Class<?>[] parameterTypes,
                                        Class<?>   returnType,
-                                       Class<?>[] checkedExceptions,
                                        int modifiers,
                                        boolean isConstructor,
                                        boolean forSerialization,
@@ -139,7 +134,6 @@ class MethodAccessorGenerator extends AccessorGenerator {
         this.returnType = returnType;
         this.modifiers = modifiers;
         this.isConstructor = isConstructor;
-        this.forSerialization = forSerialization;
 
         asm.emitMagicAndVersion();
 
@@ -334,12 +328,11 @@ class MethodAccessorGenerator extends AccessorGenerator {
             asm.emitConstantPoolUTF8
                 ("(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
         }
-        invokeDescriptorIdx = asm.cpi();
+        asm.cpi();
 
         // Output class information for non-primitive parameter types
         nonPrimitiveParametersBaseIdx = add(asm.cpi(), S2);
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> c = parameterTypes[i];
+        for (Class<?> c : parameterTypes) {
             if (!isPrimitive(c)) {
                 asm.emitConstantPoolUTF8(getClassName(c, false));
                 asm.emitConstantPoolClass(asm.cpi());
@@ -561,8 +554,7 @@ class MethodAccessorGenerator extends AccessorGenerator {
                 Label l = null; // unboxing label
                 nextParamLabel = new Label();
 
-                for (int j = 0; j < primitiveTypes.length; j++) {
-                    Class<?> c = primitiveTypes[j];
+                for (Class<?> c : primitiveTypes) {
                     if (canWidenTo(c, paramType)) {
                         if (l != null) {
                             l.bind();
@@ -715,8 +707,8 @@ class MethodAccessorGenerator extends AccessorGenerator {
         if (returnType.isPrimitive()) {
             return true;
         }
-        for (int i = 0; i < parameterTypes.length; i++) {
-            if (parameterTypes[i].isPrimitive()) {
+        for (Class<?> parameterType : parameterTypes) {
+            if (parameterType.isPrimitive()) {
                 return true;
             }
         }
@@ -725,8 +717,8 @@ class MethodAccessorGenerator extends AccessorGenerator {
 
     private int numNonPrimitiveParameterTypes() {
         int num = 0;
-        for (int i = 0; i < parameterTypes.length; i++) {
-            if (!parameterTypes[i].isPrimitive()) {
+        for (Class<?> parameterType : parameterTypes) {
+            if (!parameterType.isPrimitive()) {
                 ++num;
             }
         }
@@ -740,8 +732,8 @@ class MethodAccessorGenerator extends AccessorGenerator {
     private String buildInternalSignature() {
         StringBuilder sb = new StringBuilder();
         sb.append("(");
-        for (int i = 0; i < parameterTypes.length; i++) {
-            sb.append(getClassName(parameterTypes[i], true));
+        for (Class<?> parameterType : parameterTypes) {
+            sb.append(getClassName(parameterType, true));
         }
         sb.append(")");
         sb.append(getClassName(returnType, true));
