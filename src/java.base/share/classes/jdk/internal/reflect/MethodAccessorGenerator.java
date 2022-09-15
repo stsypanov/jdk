@@ -26,6 +26,7 @@
 package jdk.internal.reflect;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -53,11 +54,9 @@ class MethodAccessorGenerator extends AccessorGenerator {
     private Class<?>[] parameterTypes;
     private Class<?>   returnType;
     private boolean    isConstructor;
-    private boolean    forSerialization;
 
     private short targetMethodRef;
     private short invokeIdx;
-    private short invokeDescriptorIdx;
     // Constant pool index of CONSTANT_Class_info for first
     // non-primitive parameter type. Should be incremented by 2.
     private short nonPrimitiveParametersBaseIdx;
@@ -66,12 +65,13 @@ class MethodAccessorGenerator extends AccessorGenerator {
     }
 
     /** This routine is not thread-safe */
-    public MethodAccessor generateMethod(Class<?> declaringClass,
-                                         String   name,
-                                         Class<?>[] parameterTypes,
-                                         Class<?>   returnType,
-                                         int modifiers)
+    public MethodAccessor generateMethod(Method method)
     {
+        Class<?> declaringClass = method.getDeclaringClass();
+        String name = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        Class<?> returnType = method.getReturnType();
+        int modifiers = method.getModifiers();
         return (MethodAccessor) generate(declaringClass,
                                          name,
                                          parameterTypes,

@@ -25,7 +25,9 @@
 
 package jdk.internal.reflect;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import jdk.internal.misc.Unsafe;
 
 /** Used only for the first few invocations of a Method; afterward,
@@ -59,11 +61,7 @@ class NativeMethodAccessorImpl extends MethodAccessorImpl {
             try {
                 MethodAccessorImpl acc = (MethodAccessorImpl)
                     new MethodAccessorGenerator().
-                        generateMethod(method.getDeclaringClass(),
-                                       method.getName(),
-                                       method.getParameterTypes(),
-                                       method.getReturnType(),
-                                       method.getModifiers());
+                        generateMethod(method);
                 parent.setDelegate(acc);
             } catch (Throwable t) {
                 // Throwable happens in generateMethod, restore generated to 0

@@ -173,11 +173,7 @@ public class ReflectionFactory {
      */
     static MethodAccessorImpl generateMethodAccessor(Method method) {
         return (MethodAccessorImpl)new MethodAccessorGenerator()
-                .generateMethod(method.getDeclaringClass(),
-                                method.getName(),
-                                method.getParameterTypes(),
-                                method.getReturnType(),
-                                method.getModifiers());
+                .generateMethod(method);
     }
 
     public ConstructorAccessor newConstructorAccessor(Constructor<?> c) {
