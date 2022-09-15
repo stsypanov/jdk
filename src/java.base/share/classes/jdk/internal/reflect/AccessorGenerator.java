@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2001, 2022, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,13 +25,11 @@
 
 package jdk.internal.reflect;
 
-import java.lang.reflect.*;
-import jdk.internal.misc.Unsafe;
+import java.lang.reflect.Modifier;
 
 /** Shared functionality for all accessor generators */
 
 class AccessorGenerator implements ClassFileConstants {
-    static final Unsafe unsafe = Unsafe.getUnsafe();
 
     // Constants because there's no way to say "short integer constant",
     // i.e., "1S"
@@ -58,13 +56,11 @@ class AccessorGenerator implements ClassFileConstants {
     protected short invocationTargetClass;
     protected short initIdx;
     protected short initNameAndTypeIdx;
-    protected short initStringNameAndTypeIdx;
     protected short nullPointerCtorIdx;
     protected short illegalArgumentCtorIdx;
     protected short illegalArgumentStringCtorIdx;
     protected short invocationTargetCtorIdx;
     protected short superCtorIdx;
-    protected short objectClass;
     protected short toStringIdx;
     protected short codeIdx;
     protected short exceptionsIdx;
@@ -156,8 +152,7 @@ class AccessorGenerator implements ClassFileConstants {
         illegalArgumentCtorIdx = asm.cpi();
         asm.emitConstantPoolUTF8("(Ljava/lang/String;)V");
         asm.emitConstantPoolNameAndType(initIdx, asm.cpi());
-        initStringNameAndTypeIdx = asm.cpi();
-        asm.emitConstantPoolMethodref(illegalArgumentClass, initStringNameAndTypeIdx);
+        asm.emitConstantPoolMethodref(illegalArgumentClass, asm.cpi());
         illegalArgumentStringCtorIdx = asm.cpi();
         asm.emitConstantPoolUTF8("(Ljava/lang/Throwable;)V");
         asm.emitConstantPoolNameAndType(initIdx, asm.cpi());
@@ -167,7 +162,7 @@ class AccessorGenerator implements ClassFileConstants {
         superCtorIdx = asm.cpi();
         asm.emitConstantPoolUTF8("java/lang/Object");
         asm.emitConstantPoolClass(asm.cpi());
-        objectClass = asm.cpi();
+        short objectClass = asm.cpi();
         asm.emitConstantPoolUTF8("toString");
         asm.emitConstantPoolUTF8("()Ljava/lang/String;");
         asm.emitConstantPoolNameAndType(sub(asm.cpi(), S1), asm.cpi());
