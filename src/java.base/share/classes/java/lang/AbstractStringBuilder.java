@@ -357,7 +357,7 @@ abstract sealed class AbstractStringBuilder implements Appendable, CharSequence
     public char charAt(int index) {
         checkIndex(index, count);
         if (isLatin1()) {
-            return (char)(value[index] & 0xff);
+            return StringLatin1.getChar(value, index);
         }
         return StringUTF16.getChar(value, index);
     }
@@ -1781,7 +1781,7 @@ abstract sealed class AbstractStringBuilder implements Appendable, CharSequence
                 // the range of characters we're copying might all be latin1
                 byte[] val = this.value;
                 for (int i = off, j = count; i < end; i++) {
-                    char c = s.charAt(i);
+                    char c = s.getChar(i);
                     if (StringLatin1.canEncode(c)) {
                         val[j++] = (byte) c;
                     } else {

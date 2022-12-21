@@ -642,7 +642,7 @@ public final class Integer extends Number
         int limit = -Integer.MAX_VALUE;
 
         if (len > 0) {
-            char firstChar = s.charAt(0);
+            char firstChar = s.getChar(0);
             if (firstChar < '0') { // Possible leading "+" or "-"
                 if (firstChar == '-') {
                     negative = true;
@@ -660,7 +660,7 @@ public final class Integer extends Number
             int result = 0;
             while (i < len) {
                 // Accumulating negatively avoids surprises near MAX_VALUE
-                int digit = Character.digit(s.charAt(i++), radix);
+                int digit = Character.digit(s.getChar(i++), radix);
                 if (digit < 0 || result < multmin) {
                     throw NumberFormatException.forInputString(s, radix);
                 }
@@ -832,7 +832,7 @@ public final class Integer extends Number
 
         int len = s.length();
         if (len > 0) {
-            char firstChar = s.charAt(0);
+            char firstChar = s.getChar(0);
             if (firstChar == '-') {
                 throw new
                     NumberFormatException(String.format("Illegal leading minus sign " +
@@ -1414,7 +1414,7 @@ public final class Integer extends Number
 
         if (nm.isEmpty())
             throw new NumberFormatException("Zero length string");
-        char firstChar = nm.charAt(0);
+        char firstChar = nm.getChar(0);
         // Handle sign, if present
         if (firstChar == '-') {
             negative = true;

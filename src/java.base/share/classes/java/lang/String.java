@@ -1531,10 +1531,26 @@ public final class String
      *             string.
      */
     public char charAt(int index) {
+        checkIndex(index, length());
+        return getChar(index);
+    }
+
+    /**
+     * Equivalent of {@link #charAt(int)} without bounds check.
+     * <p> To be used in trusted code only.
+     *
+     * @param index the index of the {@code char} value.
+     * @return     the {@code char} value at the specified index of this string.
+     *             The first {@code char} value is at index {@code 0}.
+     * @throws     IndexOutOfBoundsException  if the {@code index}
+     *             argument is negative or not less than the length of this
+     *             string.
+     */
+    char getChar(int index) {
         if (isLatin1()) {
-            return StringLatin1.charAt(value, index);
+            return StringLatin1.getChar(value, index);
         } else {
-            return StringUTF16.charAt(value, index);
+            return StringUTF16.getChar(value, index);
         }
     }
 
@@ -2976,7 +2992,7 @@ public final class String
 
         if (trgtLen > 0) {
             if (trgtLen == 1 && replLen == 1) {
-                return replace(trgtStr.charAt(0), replStr.charAt(0));
+                return replace(trgtStr.getChar(0), replStr.getChar(0));
             }
 
             boolean thisIsLatin1 = this.isLatin1();
@@ -3006,7 +3022,7 @@ public final class String
             StringBuilder sb = new StringBuilder(resultLen);
             sb.append(replStr);
             for (int i = 0; i < thisLen; ++i) {
-                sb.append(charAt(i)).append(replStr);
+                sb.append(getChar(i)).append(replStr);
             }
             return sb.toString();
         }
@@ -3120,10 +3136,10 @@ public final class String
          */
         char ch = 0;
         if (((regex.length() == 1 &&
-             ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
+             ".$|()[{^?*+\\".indexOf(ch = regex.getChar(0)) == -1) ||
              (regex.length() == 2 &&
-              regex.charAt(0) == '\\' &&
-              (((ch = regex.charAt(1))-'0')|('9'-ch)) < 0 &&
+              regex.getChar(0) == '\\' &&
+              (((ch = regex.getChar(1))-'0')|('9'-ch)) < 0 &&
               ((ch-'a')|('z'-ch)) < 0 &&
               ((ch-'A')|('Z'-ch)) < 0)) &&
             (ch < Character.MIN_HIGH_SURROGATE ||
@@ -3844,7 +3860,7 @@ public final class String
         if (length == 0) {
             return "";
         }
-        char lastChar = charAt(length - 1);
+        char lastChar = getChar(length - 1);
         boolean optOut = lastChar == '\n' || lastChar == '\r';
         List<String> lines = lines().toList();
         final int outdent = optOut ? 0 : outdent(lines);

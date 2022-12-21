@@ -1366,7 +1366,7 @@ public class SecurityManager {
                 // restrictedPkg.equals(pkg + ".") but is noticeably more
                 // efficient:
                 rlast == plen && restrictedPkg.startsWith(pkg) &&
-                restrictedPkg.charAt(rlast) == '.')
+                restrictedPkg.getChar(rlast) == '.')
             {
                 checkPermission(
                     new RuntimePermission("accessClassInPackage." + pkg));

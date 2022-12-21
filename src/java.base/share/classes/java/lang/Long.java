@@ -685,7 +685,7 @@ public final class Long extends Number
         long limit = -Long.MAX_VALUE;
 
         if (len > 0) {
-            char firstChar = s.charAt(0);
+            char firstChar = s.getChar(0);
             if (firstChar < '0') { // Possible leading "+" or "-"
                 if (firstChar == '-') {
                     negative = true;
@@ -703,7 +703,7 @@ public final class Long extends Number
             long result = 0;
             while (i < len) {
                 // Accumulating negatively avoids surprises near MAX_VALUE
-                int digit = Character.digit(s.charAt(i++),radix);
+                int digit = Character.digit(s.getChar(i++),radix);
                 if (digit < 0 || result < multmin) {
                     throw NumberFormatException.forInputString(s, radix);
                 }
@@ -882,7 +882,7 @@ public final class Long extends Number
 
         int len = s.length();
         if (len > 0) {
-            char firstChar = s.charAt(0);
+            char firstChar = s.getChar(0);
             if (firstChar == '-') {
                 throw new
                     NumberFormatException(String.format("Illegal leading minus sign " +
@@ -895,7 +895,7 @@ public final class Long extends Number
 
                 // No need for range checks on len due to testing above.
                 long first = parseLong(s, 0, len - 1, radix);
-                int second = Character.digit(s.charAt(len - 1), radix);
+                int second = Character.digit(s.getChar(len - 1), radix);
                 if (second < 0) {
                     throw new NumberFormatException("Bad digit at end of " + s);
                 }
@@ -1255,7 +1255,7 @@ public final class Long extends Number
 
         if (nm.isEmpty())
             throw new NumberFormatException("Zero length string");
-        char firstChar = nm.charAt(0);
+        char firstChar = nm.getChar(0);
         // Handle sign, if present
         if (firstChar == '-') {
             negative = true;

@@ -1128,7 +1128,7 @@ public class Runtime {
 
         private static boolean isSimpleNumber(String s) {
             for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
+                char c = s.getChar(i);
                 char lowerBound = (i > 0) ? '0' : '1';
                 if (c < lowerBound || c > '9') {
                     return false;

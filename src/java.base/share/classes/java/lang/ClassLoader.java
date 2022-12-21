@@ -1140,7 +1140,7 @@ public abstract class ClassLoader {
     private static boolean checkName(String name) {
         if ((name == null) || (name.isEmpty()))
             return true;
-        if ((name.indexOf('/') != -1) || (name.charAt(0) == '['))
+        if ((name.indexOf('/') != -1) || (name.getChar(0) == '['))
             return false;
         return true;
     }

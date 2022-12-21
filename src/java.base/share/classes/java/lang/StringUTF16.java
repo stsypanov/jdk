@@ -1217,7 +1217,7 @@ final class StringUTF16 {
             if (((a = array).length >> 1) >= (hi = fence) &&
                 (i = index) >= 0 && i < (index = hi)) {
                 do {
-                    action.accept(charAt(a, i));
+                    action.accept(getChar(a, i));
                 } while (++i < hi);
             }
         }
@@ -1228,7 +1228,7 @@ final class StringUTF16 {
                 throw new NullPointerException();
             int i = index;
             if (i >= 0 && i < fence) {
-                action.accept(charAt(array, i));
+                action.accept(getChar(array, i));
                 index++;
                 return true;
             }
