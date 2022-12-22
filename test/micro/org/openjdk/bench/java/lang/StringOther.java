@@ -64,13 +64,6 @@ public class StringOther {
     }
 
     @Benchmark
-    public void charAt(Blackhole bh) {
-        for (int i = 0; i < testString.length(); i++) {
-            bh.consume(testString.charAt(i));
-        }
-    }
-
-    @Benchmark
     public int compareTo() {
         int total = 0;
         total += str1.compareTo(str2);
