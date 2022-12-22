@@ -1594,7 +1594,7 @@ public final class String
         int i = index - 1;
         checkIndex(i, length());
         if (isLatin1()) {
-            return (value[i] & 0xff);
+            return StringLatin1.codePointAt(value, i);
         }
         return StringUTF16.codePointBefore(value, index);
     }
