@@ -55,7 +55,7 @@ final class StringLatin1 {
         return value.length;
     }
 
-    public static int codePointAt(byte[] value, int index, int end) {
+    public static int codePointAt(byte[] value, int index) {
         return value[index] & 0xff;
     }
 
