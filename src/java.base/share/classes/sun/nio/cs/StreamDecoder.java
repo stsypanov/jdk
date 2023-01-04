@@ -185,7 +185,7 @@ public class StreamDecoder extends Reader {
         int len = length;
 
         ensureOpen();
-        Objects.checkFromToIndex(off, len, cbuf.length);
+        Objects.checkFromIndexSize(off, len, cbuf.length);
         if (len == 0)
             return 0;
 
