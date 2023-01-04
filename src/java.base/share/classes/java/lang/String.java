@@ -1561,7 +1561,8 @@ public final class String
      * @since      1.5
      */
     public int codePointAt(int index) {
-        checkIndex(index, length());
+        int length = length();
+        checkIndex(index, length);
         if (isLatin1()) {
             return StringLatin1.codePointAt(value, index);
         }
