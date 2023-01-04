@@ -38,6 +38,8 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Objects;
+
 import jdk.internal.misc.InternalLock;
 
 public final class StreamEncoder extends Writer {
@@ -153,10 +155,8 @@ public final class StreamEncoder extends Writer {
 
     private void lockedWrite(char[] cbuf, int off, int len) throws IOException {
         ensureOpen();
-        if ((off < 0) || (off > cbuf.length) || (len < 0) ||
-                ((off + len) > cbuf.length) || ((off + len) < 0)) {
-            throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
+        Objects.checkFromToIndex(off, len, cbuf.length);
+        if (len == 0) {
             return;
         }
         implWrite(cbuf, off, len);

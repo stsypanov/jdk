@@ -27,8 +27,8 @@ package java.util.zip;
 
 import java.io.FilterOutputStream;
 import java.io.OutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * This class implements an output stream filter for compressing data in
@@ -199,9 +199,8 @@ public class DeflaterOutputStream extends FilterOutputStream {
         if (def.finished()) {
             throw new IOException("write beyond end of stream");
         }
-        if ((off | len | (off + len) | (b.length - (off + len))) < 0) {
-            throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
+        Objects.checkFromToIndex(off, len, b.length);
+        if (len == 0) {
             return;
         }
         if (!def.finished()) {

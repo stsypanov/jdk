@@ -24,9 +24,11 @@
  */
 package sun.net.www.http;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
-import sun.net.www.*;
+import sun.net.www.MessageHeader;
 import sun.nio.cs.US_ASCII;
 
 /**
@@ -680,10 +682,8 @@ public class ChunkedInputStream extends InputStream implements Hurryable {
         readLock.lock();
         try {
             ensureOpen();
-            if ((off < 0) || (off > b.length) || (len < 0) ||
-                    ((off + len) > b.length) || ((off + len) < 0)) {
-                throw new IndexOutOfBoundsException();
-            } else if (len == 0) {
+            Objects.checkFromToIndex(off, len, b.length);
+            if (len == 0) {
                 return 0;
             }
 

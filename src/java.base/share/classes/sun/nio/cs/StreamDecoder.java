@@ -23,9 +23,6 @@
  * questions.
  */
 
-/*
- */
-
 package sun.nio.cs;
 
 import java.io.IOException;
@@ -42,6 +39,8 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Objects;
+
 import jdk.internal.misc.InternalLock;
 
 public class StreamDecoder extends Reader {
@@ -186,10 +185,7 @@ public class StreamDecoder extends Reader {
         int len = length;
 
         ensureOpen();
-        if ((off < 0) || (off > cbuf.length) || (len < 0) ||
-            ((off + len) > cbuf.length) || ((off + len) < 0)) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkFromToIndex(off, len, cbuf.length);
         if (len == 0)
             return 0;
 
