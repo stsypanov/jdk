@@ -199,7 +199,7 @@ public class DeflaterOutputStream extends FilterOutputStream {
         if (def.finished()) {
             throw new IOException("write beyond end of stream");
         }
-        Objects.checkFromToIndex(off, len, b.length);
+        Objects.checkFromIndexSize(off, len, b.length);
         if (len == 0) {
             return;
         }
