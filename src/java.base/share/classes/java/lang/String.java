@@ -1561,13 +1561,13 @@ public final class String
      * @since      1.5
      */
     public int codePointAt(int index) {
-        int length = length();
-        checkIndex(index, length);
         if (isLatin1()) {
+            checkIndex(index, value.length);
             return StringLatin1.codePointAt(value, index);
         }
-        return StringUTF16.codePointAt(value, index, length);
-    }
+        int length = value.length >> 1;
+        checkIndex(index, length);
+        return StringUTF16.codePointAt(value, index, length);    }
 
     /**
      * Returns the character (Unicode code point) before the specified
