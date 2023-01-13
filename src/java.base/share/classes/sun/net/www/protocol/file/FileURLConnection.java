@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,12 +23,6 @@
  * questions.
  */
 
-/**
- * Open an file input stream given a URL.
- * @author      James Gosling
- * @author      Steven B. Byrne
- */
-
 package sun.net.www.protocol.file;
 
 import java.net.URL;
@@ -40,6 +34,11 @@ import sun.net.www.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
+/**
+ * Open a file input stream given a URL.
+ * @author      James Gosling
+ * @author      Steven B. Byrne
+ */
 public class FileURLConnection extends URLConnection {
 
     static String CONTENT_LENGTH = "content-length";
@@ -47,14 +46,12 @@ public class FileURLConnection extends URLConnection {
     static String TEXT_PLAIN = "text/plain";
     static String LAST_MODIFIED = "last-modified";
 
-    String contentType;
     InputStream is;
 
     File file;
     String filename;
     boolean isDirectory = false;
-    boolean exists = false;
-    List<String> files;
+    String[] files;
 
     long length = -1;
     long lastModified = 0;
@@ -72,19 +69,15 @@ public class FileURLConnection extends URLConnection {
      */
     public void connect() throws IOException {
         if (!connected) {
-            try {
-                filename = file.toString();
-                isDirectory = file.isDirectory();
-                if (isDirectory) {
-                    String[] fileList = file.list();
-                    if (fileList == null)
-                        throw new FileNotFoundException(filename + " exists, but is not accessible");
-                    files = Arrays.<String>asList(fileList);
-                } else {
-                    is = new BufferedInputStream(new FileInputStream(filename));
-                }
-            } catch (IOException e) {
-                throw e;
+            filename = file.toString();
+            isDirectory = file.isDirectory();
+            if (isDirectory) {
+                String[] fileList = file.list();
+                if (fileList == null)
+                    throw new FileNotFoundException(filename + " exists, but is not accessible");
+                files = fileList;
+            } else {
+                is = new BufferedInputStream(new FileInputStream(filename));
             }
             connected = true;
         }
@@ -93,40 +86,40 @@ public class FileURLConnection extends URLConnection {
     private boolean initializedHeaders = false;
 
     private void initializeHeaders() {
+        if (initializedHeaders) {
+            return;
+        }
         try {
             connect();
-            exists = file.exists();
         } catch (IOException e) {
         }
-        if (!initializedHeaders || !exists) {
-            length = file.length();
-            lastModified = file.lastModified();
+        length = file.length();
+        lastModified = file.lastModified();
 
-            if (!isDirectory) {
-                FileNameMap map = java.net.URLConnection.getFileNameMap();
-                contentType = map.getContentTypeFor(filename);
-                if (contentType != null) {
-                    properties.add(CONTENT_TYPE, contentType);
-                }
-                properties.add(CONTENT_LENGTH, String.valueOf(length));
-
-                /*
-                 * Format the last-modified field into the preferred
-                 * Internet standard - ie: fixed-length subset of that
-                 * defined by RFC 1123
-                 */
-                if (lastModified != 0) {
-                    Date date = new Date(lastModified);
-                    SimpleDateFormat fo =
-                        new SimpleDateFormat ("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-                    fo.setTimeZone(TimeZone.getTimeZone("GMT"));
-                    properties.add(LAST_MODIFIED, fo.format(date));
-                }
-            } else {
-                properties.add(CONTENT_TYPE, TEXT_PLAIN);
+        if (!isDirectory) {
+            FileNameMap map = java.net.URLConnection.getFileNameMap();
+            String contentType = map.getContentTypeFor(filename);
+            if (contentType != null) {
+                properties.add(CONTENT_TYPE, contentType);
             }
-            initializedHeaders = true;
+            properties.add(CONTENT_LENGTH, String.valueOf(length));
+
+            /*
+             * Format the last-modified field into the preferred
+             * Internet standard - ie: fixed-length subset of that
+             * defined by RFC 1123
+             */
+            if (lastModified != 0) {
+                Date date = new Date(lastModified);
+                SimpleDateFormat fo =
+                        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+                fo.setTimeZone(TimeZone.getTimeZone("GMT"));
+                properties.add(LAST_MODIFIED, fo.format(date));
+            }
+        } else {
+            properties.add(CONTENT_TYPE, TEXT_PLAIN);
         }
+        initializedHeaders = true;
     }
 
     public Map<String,List<String>> getHeaderFields() {
@@ -174,9 +167,6 @@ public class FileURLConnection extends URLConnection {
     public synchronized InputStream getInputStream()
         throws IOException {
 
-        int iconHeight;
-        int iconWidth;
-
         connect();
 
         if (is == null) {
@@ -189,10 +179,9 @@ public class FileURLConnection extends URLConnection {
                     throw new FileNotFoundException(filename);
                 }
 
-                files.sort(Collator.getInstance());
+                Arrays.sort(files, Collator.getInstance());
 
-                for (int i = 0 ; i < files.size() ; i++) {
-                    String fileName = files.get(i);
+                for (String fileName : files) {
                     sb.append(fileName);
                     sb.append("\n");
                 }
