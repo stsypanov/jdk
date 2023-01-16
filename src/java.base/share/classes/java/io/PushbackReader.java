@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -98,31 +98,27 @@ public class PushbackReader extends FilterReader {
     public int read(char[] cbuf, int off, int len) throws IOException {
         synchronized (lock) {
             ensureOpen();
-            try {
-                Objects.checkFromIndexSize(off, len, cbuf.length);
-                if (len == 0) {
-                    return 0;
-                }
-                int avail = buf.length - pos;
-                if (avail > 0) {
-                    if (len < avail)
-                        avail = len;
-                    System.arraycopy(buf, pos, cbuf, off, avail);
-                    pos += avail;
-                    off += avail;
-                    len -= avail;
-                }
-                if (len > 0) {
-                    len = super.read(cbuf, off, len);
-                    if (len == -1) {
-                        return (avail == 0) ? -1 : avail;
-                    }
-                    return avail + len;
-                }
-                return avail;
-            } catch (ArrayIndexOutOfBoundsException e) {
-                throw new IndexOutOfBoundsException();
+            Objects.checkFromIndexSize(off, len, cbuf.length);
+            if (len == 0) {
+                return 0;
             }
+            int avail = buf.length - pos;
+            if (avail > 0) {
+                if (len < avail)
+                    avail = len;
+                System.arraycopy(buf, pos, cbuf, off, avail);
+                pos += avail;
+                off += avail;
+                len -= avail;
+            }
+            if (len > 0) {
+                len = super.read(cbuf, off, len);
+                if (len == -1) {
+                    return (avail == 0) ? -1 : avail;
+                }
+                return avail + len;
+            }
+            return avail;
         }
     }
 
