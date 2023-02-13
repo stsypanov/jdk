@@ -7732,7 +7732,11 @@ public class Arrays {
         if (a == b)
             return -1;
 
-        return (a.length != b.length && ArraysSupport.mismatch(a, b, length) < 0) ? length : -1;
+        if (a.length != b.length) {
+            return length;
+        }
+
+        return ArraysSupport.mismatch(a, b, length);
     }
 
     /**
