@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,6 +26,11 @@
 package java.util;
 
 import jdk.internal.access.SharedSecrets;
+
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * A specialized {@link Set} implementation for use with enum types.  All of
@@ -79,10 +84,10 @@ import jdk.internal.access.SharedSecrets;
  * @see EnumMap
  */
 public abstract sealed class EnumSet<E extends Enum<E>> extends AbstractSet<E>
-    implements Cloneable, java.io.Serializable permits JumboEnumSet, RegularEnumSet
+    implements Cloneable, Serializable permits JumboEnumSet, RegularEnumSet
 {
     // declare EnumSet.class serialization compatibility with JDK 8
-    @java.io.Serial
+    @Serial
     private static final long serialVersionUID = 1009687484059888093L;
 
     /**
@@ -420,10 +425,8 @@ public abstract sealed class EnumSet<E extends Enum<E>> extends AbstractSet<E>
      * @serial include
      */
     private static class SerializationProxy<E extends Enum<E>>
-        implements java.io.Serializable
+        implements Serializable
     {
-
-        private static final Enum<?>[] ZERO_LENGTH_ENUM_ARRAY = new Enum<?>[0];
 
         /**
          * The element type of this enum set.
@@ -432,16 +435,8 @@ public abstract sealed class EnumSet<E extends Enum<E>> extends AbstractSet<E>
          */
         private final Class<E> elementType;
 
-        /**
-         * The elements contained in this enum set.
-         *
-         * @serial
-         */
-        private final Enum<?>[] elements;
-
         SerializationProxy(EnumSet<E> set) {
             elementType = set.elementType;
-            elements = set.toArray(ZERO_LENGTH_ENUM_ARRAY);
         }
 
         /**
@@ -451,19 +446,15 @@ public abstract sealed class EnumSet<E extends Enum<E>> extends AbstractSet<E>
          * @return a {@code EnumSet} object with initial state
          * held by this proxy
          */
-        @SuppressWarnings("unchecked")
-        @java.io.Serial
+        @Serial
         private Object readResolve() {
             // instead of cast to E, we should perhaps use elementType.cast()
             // to avoid injection of forged stream, but it will slow the
             // implementation
-            EnumSet<E> result = EnumSet.noneOf(elementType);
-            for (Enum<?> e : elements)
-                result.add((E)e);
-            return result;
+            return EnumSet.allOf(elementType);
         }
 
-        @java.io.Serial
+        @Serial
         private static final long serialVersionUID = 362491234563181265L;
     }
 
@@ -476,7 +467,7 @@ public abstract sealed class EnumSet<E extends Enum<E>> extends AbstractSet<E>
      * @return a {@link SerializationProxy}
      * representing the state of this instance
      */
-    @java.io.Serial
+    @Serial
     Object writeReplace() {
         return new SerializationProxy<>(this);
     }
@@ -484,21 +475,21 @@ public abstract sealed class EnumSet<E extends Enum<E>> extends AbstractSet<E>
     /**
      * Throws {@code InvalidObjectException}.
      * @param s the stream
-     * @throws java.io.InvalidObjectException always
+     * @throws InvalidObjectException always
      */
-    @java.io.Serial
-    private void readObject(java.io.ObjectInputStream s)
-        throws java.io.InvalidObjectException {
-        throw new java.io.InvalidObjectException("Proxy required");
+    @Serial
+    private void readObject(ObjectInputStream s)
+        throws InvalidObjectException {
+        throw new InvalidObjectException("Proxy required");
     }
 
     /**
      * Throws {@code InvalidObjectException}.
-     * @throws java.io.InvalidObjectException always
+     * @throws InvalidObjectException always
      */
-    @java.io.Serial
+    @Serial
     private void readObjectNoData()
-        throws java.io.InvalidObjectException {
-        throw new java.io.InvalidObjectException("Proxy required");
+        throws InvalidObjectException {
+        throw new InvalidObjectException("Proxy required");
     }
 }
