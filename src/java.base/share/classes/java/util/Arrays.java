@@ -2659,11 +2659,7 @@ public class Arrays {
         if (a==null || a2==null)
             return false;
 
-        int length = a.length;
-        if (a2.length != length)
-            return false;
-
-        return ArraysSupport.mismatch(a, a2, length) < 0;
+        return mismatch(a, a2) == -1;
     }
 
     /**
@@ -7736,8 +7732,7 @@ public class Arrays {
         if (a == b)
             return -1;
 
-        int i = ArraysSupport.mismatch(a, b, length);
-        return (i < 0 && a.length != b.length) ? length : i;
+        return (a.length != b.length && ArraysSupport.mismatch(a, b, length) < 0) ? length : -1;
     }
 
     /**
