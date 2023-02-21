@@ -3869,12 +3869,12 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     // its intCompact field is not INFLATED.
     static class StringBuilderHelper {
         final StringBuilder sb;    // Placeholder for BigDecimal string
-        final byte[] cmpCharArray; // character array to place the intCompact
+        final char[] cmpCharArray; // character array to place the intCompact
 
         StringBuilderHelper() {
             sb = new StringBuilder(32);
             // All non negative longs can be made to fit into 19 character array.
-            cmpCharArray = new byte[19];
+            cmpCharArray = new char[19];
         }
 
         // Accessors.
@@ -3883,7 +3883,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             return sb;
         }
 
-        byte[] getCompactCharArray() {
+        char[] getCompactCharArray() {
             return cmpCharArray;
         }
 
@@ -3932,7 +3932,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             return charPos;
         }
 
-        static final byte[] DIGIT_TENS = {
+        static final char[] DIGIT_TENS = {
             '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
             '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
             '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
@@ -3945,7 +3945,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
         };
 
-        static final byte[] DIGIT_ONES = {
+        static final char[] DIGIT_ONES = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
