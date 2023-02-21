@@ -41,8 +41,8 @@ import java.util.Objects;
 /**
  * Immutable, arbitrary-precision signed decimal numbers.  A {@code
  * BigDecimal} consists of an arbitrary precision integer
- * <i>{@linkplain unscaledValue() unscaled value}</i> and a 32-bit
- * integer <i>{@linkplain scale() scale}</i>.  If the
+ * <i>{@linkplain #unscaledValue() unscaled value}</i> and a 32-bit
+ * integer <i>{@linkplain #scale() scale}</i>.  If the
  * scale is zero or positive, the scale is the number of digits to
  * the right of the decimal point.  If the scale is negative, the
  * unscaled value of the number is multiplied by ten to the power of
@@ -95,12 +95,12 @@ import java.util.Objects;
  *
  * The different representations of the same numerical value are
  * called members of the same <i>cohort</i>. The {@linkplain
- * compareTo(BigDecimal) natural order} of {@code BigDecimal}
+ * #compareTo(BigDecimal) natural order} of {@code BigDecimal}
  * considers members of the same cohort to be equal to each other. In
- * contrast, the {@link equals equals} method requires both the
+ * contrast, the {@link #equals equals} method requires both the
  * numerical value and representation to be the same for equality to
- * hold. The results of methods like {@link scale} and {@link
- * unscaledValue} will differ for numerically equal values with
+ * hold. The results of methods like {@link #scale} and {@link
+ * #unscaledValue} will differ for numerically equal values with
  * different representations.
  *
  * <p>In general the rounding modes and precision setting determine
@@ -229,7 +229,7 @@ import java.util.Objects;
  * @apiNote Care should be exercised if {@code BigDecimal} objects are
  * used as keys in a {@link java.util.SortedMap SortedMap} or elements
  * in a {@link java.util.SortedSet SortedSet} since {@code
- * BigDecimal}'s <i>{@linkplain compareTo(BigDecimal) natural
+ * BigDecimal}'s <i>{@linkplain #compareTo(BigDecimal) natural
  * ordering}</i> is <em>inconsistent with equals</em>.  See {@link
  * Comparable}, {@link java.util.SortedMap} or {@link
  * java.util.SortedSet} for more information.
@@ -260,11 +260,11 @@ import java.util.Objects;
  * precision, and exponent range. A format determines the set of
  * representable values. Most operations accept as input one or more
  * values of a given format and produce a result in the same format.
- * A {@code BigDecimal}'s {@linkplain scale() scale} is equivalent to
+ * A {@code BigDecimal}'s {@linkplain #scale() scale} is equivalent to
  * negating an IEEE 754 value's exponent. {@code BigDecimal} values do
  * not have a format in the same sense; all values have the same
  * possible range of scale/exponent and the {@linkplain
- * unscaledValue() unscaled value} has arbitrary precision. Instead,
+ * #unscaledValue() unscaled value} has arbitrary precision. Instead,
  * for the {@code BigDecimal} operations taking a {@code MathContext}
  * parameter, if the {@code MathContext} has a nonzero precision, the
  * set of possible representable values for the result is determined
@@ -3262,7 +3262,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     /**
      * Returns the hash code for this {@code BigDecimal}.
      * The hash code is computed as a function of the {@linkplain
-     * unscaledValue() unscaled value} and the {@linkplain scale()
+     * #unscaledValue() unscaled value} and the {@linkplain #scale()
      * scale} of this {@code BigDecimal}.
      *
      * @apiNote
@@ -3869,12 +3869,12 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     // its intCompact field is not INFLATED.
     static class StringBuilderHelper {
         final StringBuilder sb;    // Placeholder for BigDecimal string
-        final char[] cmpCharArray; // character array to place the intCompact
+        final byte[] cmpCharArray; // character array to place the intCompact
 
         StringBuilderHelper() {
             sb = new StringBuilder(32);
             // All non negative longs can be made to fit into 19 character array.
-            cmpCharArray = new char[19];
+            cmpCharArray = new byte[19];
         }
 
         // Accessors.
@@ -3883,7 +3883,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             return sb;
         }
 
-        char[] getCompactCharArray() {
+        byte[] getCompactCharArray() {
             return cmpCharArray;
         }
 
@@ -3932,7 +3932,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             return charPos;
         }
 
-        static final char[] DIGIT_TENS = {
+        static final byte[] DIGIT_TENS = {
             '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
             '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
             '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
@@ -3945,7 +3945,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
         };
 
-        static final char[] DIGIT_ONES = {
+        static final byte[] DIGIT_ONES = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -3984,15 +3984,15 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         }
 
         StringBuilderHelper sbHelper = new StringBuilderHelper();
-        char[] coeff;
+        String coeff;
         int offset;  // offset is the starting index for coeff array
         // Get the significand as an absolute value
         if (intCompact != INFLATED) {
             offset = sbHelper.putIntCompact(Math.abs(intCompact));
-            coeff  = sbHelper.getCompactCharArray();
+            coeff  = new String(sbHelper.getCompactCharArray());
         } else {
             offset = 0;
-            coeff  = intVal.abs().toString().toCharArray();
+            coeff  = intVal.abs().toString();
         }
 
         // Construct a buffer, with sufficient capacity for all cases.
@@ -4002,7 +4002,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
         StringBuilder buf = sbHelper.getStringBuilder();
         if (signum() < 0)             // prefix '-' if negative
             buf.append('-');
-        int coeffLen = coeff.length - offset;
+        int coeffLen = coeff.length() - offset;
         long adjusted = -(long)scale + (coeffLen -1);
         if ((scale >= 0) && (adjusted >= -6)) { // plain number
             int pad = scale - coeffLen;         // count of padding zeros
@@ -4020,7 +4020,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
             }
         } else { // E-notation is needed
             if (sci) {                       // Scientific notation
-                buf.append(coeff[offset]);   // first character
+                buf.append(coeff.charAt(offset));   // first character
                 if (coeffLen > 1) {          // more to come
                     buf.append('.');
                     buf.append(coeff, offset + 1, coeffLen - 1);
