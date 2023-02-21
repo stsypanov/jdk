@@ -3468,19 +3468,11 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
                 return "0";
             }
             int trailingZeros = checkScaleNonZero((-(long)scale));
-            StringBuilder buf;
-            if(intCompact!=INFLATED) {
-                buf = new StringBuilder(20+trailingZeros);
-                buf.append(intCompact);
+            if (intCompact != INFLATED) {
+                return String.valueOf(intCompact).concat("0".repeat(trailingZeros));
             } else {
-                String str = intVal.toString();
-                buf = new StringBuilder(str.length()+trailingZeros);
-                buf.append(str);
+                return intVal.toString().concat("0".repeat(trailingZeros));
             }
-            for (int i = 0; i < trailingZeros; i++) {
-                buf.append('0');
-            }
-            return buf.toString();
         }
         String str ;
         if(intCompact!=INFLATED) {
@@ -3494,24 +3486,30 @@ public class BigDecimal extends Number implements Comparable<BigDecimal> {
     /* Returns a digit.digit string */
     private String getValueString(int signum, String intString, int scale) {
         /* Insert decimal point */
-        StringBuilder buf;
         int insertionPoint = intString.length() - scale;
         if (insertionPoint == 0) {  /* Point goes right before intVal */
-            return (signum<0 ? "-0." : "0.") + intString;
+            return (signum < 0 ? "-0." : "0.").concat(intString);
         } else if (insertionPoint > 0) { /* Point goes inside intVal */
-            buf = new StringBuilder(intString);
-            buf.insert(insertionPoint, '.');
-            if (signum < 0)
-                buf.insert(0, '-');
-        } else { /* We must insert zeros between point and intVal */
-            buf = new StringBuilder(3-insertionPoint + intString.length());
-            buf.append(signum<0 ? "-0." : "0.");
-            for (int i=0; i<-insertionPoint; i++) {
-                buf.append('0');
+            if (signum < 0) {
+                return new StringBuilder(intString.length() + 2)
+                        .append('-')
+                        .append(intString)
+                        .insert(insertionPoint, '.')
+                        .toString();
             }
-            buf.append(intString);
+            return new StringBuilder(intString).insert(insertionPoint, '.').toString();
+        } else { /* We must insert zeros between point and intVal */
+            if (signum < 0) return new StringBuilder(3 - insertionPoint + intString.length())
+                    .append("-0.")
+                    .append("0".repeat(-insertionPoint))
+                    .append(intString)
+                    .toString();
+            return new StringBuilder(2 - insertionPoint + intString.length())
+                    .append("0.")
+                    .append("0".repeat(-insertionPoint))
+                    .append(intString)
+                    .toString();
         }
-        return buf.toString();
     }
 
     /**
