@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -578,11 +578,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
             final E x = (E) es[(n = --size)];
             es[n] = null;
             if (n > 0) {
-                final Comparator<? super E> cmp;
-                if ((cmp = comparator) == null)
-                    siftDownComparable(0, x, es, n);
-                else
-                    siftDownUsingComparator(0, x, es, n, cmp);
+                siftDownUsingComparator(0, x, es, n, getComparator(comparator));
             }
         }
         return result;
@@ -633,23 +629,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * @param x the item to insert
      */
     private void siftUp(int k, E x) {
-        if (comparator != null)
-            siftUpUsingComparator(k, x, queue, comparator);
-        else
-            siftUpComparable(k, x, queue);
-    }
-
-    private static <T> void siftUpComparable(int k, T x, Object[] es) {
-        Comparable<? super T> key = (Comparable<? super T>) x;
-        while (k > 0) {
-            int parent = (k - 1) >>> 1;
-            Object e = es[parent];
-            if (key.compareTo((T) e) >= 0)
-                break;
-            es[k] = e;
-            k = parent;
-        }
-        es[k] = key;
+        siftUpUsingComparator(k, x, queue, getComparator(comparator));
     }
 
     private static <T> void siftUpUsingComparator(
@@ -674,29 +654,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * @param x the item to insert
      */
     private void siftDown(int k, E x) {
-        if (comparator != null)
-            siftDownUsingComparator(k, x, queue, size, comparator);
-        else
-            siftDownComparable(k, x, queue, size);
-    }
-
-    private static <T> void siftDownComparable(int k, T x, Object[] es, int n) {
-        // assert n > 0;
-        Comparable<? super T> key = (Comparable<? super T>)x;
-        int half = n >>> 1;           // loop while a non-leaf
-        while (k < half) {
-            int child = (k << 1) + 1; // assume left child is least
-            Object c = es[child];
-            int right = child + 1;
-            if (right < n &&
-                ((Comparable<? super T>) c).compareTo((T) es[right]) > 0)
-                c = es[child = right];
-            if (key.compareTo((T) c) <= 0)
-                break;
-            es[k] = c;
-            k = child;
-        }
-        es[k] = key;
+        siftDownUsingComparator(k, x, queue, size, getComparator(comparator));
     }
 
     private static <T> void siftDownUsingComparator(
@@ -725,13 +683,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
     private void heapify() {
         final Object[] es = queue;
         int n = size, i = (n >>> 1) - 1;
-        final Comparator<? super E> cmp;
-        if ((cmp = comparator) == null)
-            for (; i >= 0; i--)
-                siftDownComparable(i, (E) es[i], es, n);
-        else
-            for (; i >= 0; i--)
-                siftDownUsingComparator(i, (E) es[i], es, n, cmp);
+        siftDownUsingComparator(i, (E) es[i], es, n, getComparator(comparator));
     }
 
     /**
@@ -970,4 +922,9 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         if (expectedModCount != modCount)
             throw new ConcurrentModificationException();
     }
+
+    private static <E> Comparator<? super E> getComparator(Comparator<? super E> comparator) {
+        return comparator == null ? (Comparator<? super E>) Comparator.naturalOrder() : comparator;
+    }
+
 }
