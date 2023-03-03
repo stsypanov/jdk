@@ -3307,8 +3307,9 @@ public final class Class<T> implements java.io.Serializable,
 
     // Lazily create and cache ReflectionData
     private ReflectionData<T> reflectionData() {
-        SoftReference<ReflectionData<T>> reflectionData = this.reflectionData;
-        int classRedefinedCount = this.classRedefinedCount;
+        Class<T> klass = this;
+        SoftReference<ReflectionData<T>> reflectionData = klass.reflectionData;
+        int classRedefinedCount = klass.classRedefinedCount;
         ReflectionData<T> rd;
         if (reflectionData != null &&
             (rd = reflectionData.get()) != null &&
@@ -3329,8 +3330,9 @@ public final class Class<T> implements java.io.Serializable,
                 return rd;
             }
             // else retry
-            oldReflectionData = this.reflectionData;
-            classRedefinedCount = this.classRedefinedCount;
+            Class<T> klass = this;
+            oldReflectionData = klass.reflectionData;
+            classRedefinedCount = klass.classRedefinedCount;
             if (oldReflectionData != null &&
                 (rd = oldReflectionData.get()) != null &&
                 rd.redefinedCount == classRedefinedCount) {
@@ -4149,8 +4151,9 @@ public final class Class<T> implements java.io.Serializable,
 
     private AnnotationData annotationData() {
         while (true) { // retry loop
-            AnnotationData annotationData = this.annotationData;
-            int classRedefinedCount = this.classRedefinedCount;
+            Class<T> klass = this;
+            AnnotationData annotationData = klass.annotationData;
+            int classRedefinedCount = klass.classRedefinedCount;
             if (annotationData != null &&
                 annotationData.redefinedCount == classRedefinedCount) {
                 return annotationData;
@@ -4158,7 +4161,7 @@ public final class Class<T> implements java.io.Serializable,
             // null or stale annotationData -> optimistically create new instance
             AnnotationData newAnnotationData = createAnnotationData(classRedefinedCount);
             // try to install it
-            if (Atomic.casAnnotationData(this, annotationData, newAnnotationData)) {
+            if (Atomic.casAnnotationData(klass, annotationData, newAnnotationData)) {
                 // successfully installed new AnnotationData
                 return newAnnotationData;
             }
