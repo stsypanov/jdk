@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -103,7 +103,7 @@ class UnixFileSystem extends FileSystem {
 
     @Override
     public int prefixLength(String pathname) {
-        return pathname.startsWith("/") ? 1 : 0;
+        return pathname.charAt(0) == '/' ? 1 : 0;
     }
 
     @Override
@@ -111,9 +111,11 @@ class UnixFileSystem extends FileSystem {
         if (child.isEmpty()) return parent;
         if (child.charAt(0) == '/') {
             if (parent.equals("/")) return child;
-            return parent + child;
+            return parent.concat(child);
         }
-        if (parent.equals("/")) return parent + child;
+        if (parent.equals("/")) {
+            return parent.concat(child);
+        }
         return parent + '/' + child;
     }
 
@@ -142,7 +144,7 @@ class UnixFileSystem extends FileSystem {
 
     @Override
     public boolean isInvalid(File f) {
-        return f.getPath().indexOf('\u0000') < 0 ? false : true;
+        return f.getPath().indexOf('\u0000') >= 0;
     }
 
     @Override
@@ -251,8 +253,7 @@ class UnixFileSystem extends FileSystem {
                     // Punt on pathnames containing . and ..
                     return null;
                 }
-                if (idx == 0 ||
-                    idx >= last - 1 ||
+                if (idx >= last - 1 ||
                     path.charAt(idx - 1) == sep) {
                     // Punt on pathnames containing adjacent slashes
                     // toward the end
