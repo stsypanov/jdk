@@ -3299,7 +3299,7 @@ public final class Class<T> implements java.io.Serializable,
         }
     }
 
-    private transient volatile SoftReference<ReflectionData<T>> reflectionData;
+    private transient SoftReference<ReflectionData<T>> reflectionData;
 
     // Incremented by the VM on each call to JVM TI RedefineClasses()
     // that redefines this class or a superclass.
