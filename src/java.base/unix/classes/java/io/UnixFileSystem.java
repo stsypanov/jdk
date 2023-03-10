@@ -103,7 +103,7 @@ class UnixFileSystem extends FileSystem {
 
     @Override
     public int prefixLength(String pathname) {
-        return pathname.charAt(0) == '/' ? 1 : 0;
+        return pathname.startsWith("/") ? 1 : 0;
     }
 
     @Override
