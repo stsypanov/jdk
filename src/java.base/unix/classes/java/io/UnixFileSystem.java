@@ -116,7 +116,11 @@ class UnixFileSystem extends FileSystem {
         if (parent.equals("/")) {
             return parent.concat(child);
         }
-        return parent + '/' + child;
+        return new StringBuilder(parent.length() + child.length() + 1)
+                .append(parent)
+                .append('/')
+                .append(child)
+                .toString();
     }
 
     @Override
