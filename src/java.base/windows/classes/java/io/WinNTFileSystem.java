@@ -25,7 +25,6 @@
 
 package java.io;
 
-import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.BitSet;
@@ -43,6 +42,7 @@ import sun.security.action.GetPropertyAction;
 class WinNTFileSystem extends FileSystem {
 
     private final char slash;
+    private final String slashStr;
     private final char altSlash;
     private final char semicolon;
     private final String userDir;
@@ -64,6 +64,7 @@ class WinNTFileSystem extends FileSystem {
     public WinNTFileSystem() {
         Properties props = GetPropertyAction.privilegedGetProperties();
         slash = props.getProperty("file.separator").charAt(0);
+        slashStr = String.valueOf(slash);
         semicolon = props.getProperty("path.separator").charAt(0);
         altSlash = (this.slash == '\\') ? '/' : '\\';
         userDir = normalize(props.getProperty("user.dir"));
@@ -80,7 +81,7 @@ class WinNTFileSystem extends FileSystem {
     }
 
     private String slashify(String p) {
-        if (!p.isEmpty() && p.charAt(0) != slash) return slash + p;
+        if (!p.isEmpty() && p.charAt(0) != slash) return slashStr.concat(p);
         else return p;
     }
 
@@ -293,7 +294,7 @@ class WinNTFileSystem extends FileSystem {
 
     @Override
     public String getDefaultParent() {
-        return ("" + slash);
+        return slashStr;
     }
 
     @Override
@@ -360,18 +361,18 @@ class WinNTFileSystem extends FileSystem {
         if (pl == 3)
             return path;                        /* Absolute local */
         if (pl == 0)
-            return getUserPath() + slashify(path); /* Completely relative */
+            return getUserPath().concat(slashify(path)); /* Completely relative */
         if (pl == 1) {                          /* Drive-relative */
             String up = getUserPath();
             String ud = getDrive(up);
-            if (ud != null) return ud + path;
-            return up + path;                   /* User dir is a UNC path */
+            if (ud != null) return ud.concat(path);
+            return up.concat(path);                   /* User dir is a UNC path */
         }
         if (pl == 2) {                          /* Directory-relative */
             String up = getUserPath();
             String ud = getDrive(up);
             if ((ud != null) && path.startsWith(ud))
-                return up + slashify(path.substring(2));
+                return up.concat(slashify(path.substring(2)));
             char drive = path.charAt(0);
             String dir = getDriveDirectory(drive);
             if (dir != null) {
@@ -449,7 +450,7 @@ class WinNTFileSystem extends FileSystem {
             char c = path.charAt(0);
             if ((c >= 'A') && (c <= 'Z'))
                 return path;
-            return "" + ((char) (c-32)) + ':';
+            return String.valueOf((char) (c - 32)).concat(":");
         } else if ((len == 3) &&
                    (isLetter(path.charAt(0))) &&
                    (path.charAt(1) == ':') &&
@@ -457,7 +458,7 @@ class WinNTFileSystem extends FileSystem {
             char c = path.charAt(0);
             if ((c >= 'A') && (c <= 'Z'))
                 return path;
-            return "" + ((char) (c-32)) + ':' + '\\';
+            return String.valueOf((char) (c - 32)).concat(":\\");
         }
         if (!useCanonCaches) {
             long comp = Blocker.begin();
@@ -550,12 +551,7 @@ class WinNTFileSystem extends FileSystem {
                     return null;
                 }
             } else if (c == sep) {
-                if (adjacentDots == 1 && nonDotCount == 0) {
-                    // Punt on pathnames containing . and ..
-                    return null;
-                }
-                if (idx == 0 ||
-                    idx >= last - 1 ||
+                if (idx >= last - 1 ||
                     path.charAt(idx - 1) == sep ||
                     path.charAt(idx - 1) == altSep) {
                     // Punt on pathnames containing adjacent slashes
