@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,9 +25,10 @@
 
 package sun.nio.fs;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.*;
-import java.io.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.net.URI;
 import java.util.*;
 import java.lang.ref.WeakReference;
@@ -234,18 +235,16 @@ class WindowsPath implements Path {
             if (isEmpty())
                 return defaultDirectory;
             if (defaultDirectory.endsWith("\\")) {
-                return defaultDirectory + path;
+                return defaultDirectory.concat(path);
             } else {
-                StringBuilder sb =
-                    new StringBuilder(defaultDirectory.length() + path.length() + 1);
-                return sb.append(defaultDirectory).append('\\').append(path).toString();
+                return join(defaultDirectory, path);
             }
         }
 
         // Directory relative path ("\foo" for example)
         if (type == WindowsPathType.DIRECTORY_RELATIVE) {
             String defaultRoot = getFileSystem().defaultRoot();
-            return defaultRoot + path.substring(1);
+            return defaultRoot.concat(path.substring(1));
         }
 
         // Drive relative path ("C:foo" for example).
@@ -292,9 +291,9 @@ class WindowsPath implements Path {
     // Add long path prefix to path
     static String addPrefix(String path) {
         if (path.startsWith("\\\\")) {
-            path = "\\\\?\\UNC" + path.substring(1, path.length());
+            path = "\\\\?\\UNC".concat(path.substring(1));
         } else {
-            path = "\\\\?\\" + path;
+            path = "\\\\?\\".concat(path);
         }
         return path;
     }
@@ -473,15 +472,12 @@ class WindowsPath implements Path {
             return childRemaining;
         }
 
-        StringBuilder result = new StringBuilder();
-        for (int j=0; j<dotdots; j++) {
-            result.append("..\\");
-        }
+        StringBuilder result = new StringBuilder("..\\".repeat(dotdots));
 
         // append remaining names in child
         if (!isChildEmpty) {
             for (int j=0; j<childRemaining.getNameCount(); j++) {
-                result.append(childRemaining.getName(j).toString());
+                result.append(childRemaining.getName(j));
                 result.append("\\");
             }
         }
@@ -603,9 +599,9 @@ class WindowsPath implements Path {
             case RELATIVE: {
                 String result;
                 if (path.endsWith("\\") || (root.length() == path.length())) {
-                    result = path + other.path;
+                    result = path.concat(other.path);
                 } else {
-                    result = path + "\\" + other.path;
+                    result = join(path, other.path);
                 }
                 return new WindowsPath(getFileSystem(), type, root, result);
             }
@@ -613,9 +609,9 @@ class WindowsPath implements Path {
             case DIRECTORY_RELATIVE: {
                 String result;
                 if (root.endsWith("\\")) {
-                    result = root + other.path.substring(1);
+                    result = root.concat(other.path.substring(1));
                 } else {
-                    result = root + other.path;
+                    result = root.concat(other.path);
                 }
                 return createFromNormalizedPath(getFileSystem(), result);
             }
@@ -631,9 +627,9 @@ class WindowsPath implements Path {
                 String remaining = other.path.substring(other.root.length());
                 String result;
                 if (path.endsWith("\\")) {
-                    result = path + remaining;
+                    result = path.concat(remaining);
                 } else {
-                    result = path + "\\" + remaining;
+                    result = join(path, remaining);
                 }
                 return createFromNormalizedPath(getFileSystem(), result);
             }
@@ -641,6 +637,14 @@ class WindowsPath implements Path {
             default:
                 throw new AssertionError();
         }
+    }
+
+    private static String join(String path, String remaining) {
+        return new StringBuilder(path.length() + remaining.length() + 1)
+                .append(path)
+                .append("\\")
+                .append(remaining)
+                .toString();
     }
 
     // generate offset array
@@ -981,7 +985,7 @@ class WindowsPath implements Path {
             String s = getPathForPermissionCheck();
             sm.checkRead(s);
             if (watchSubtree)
-                sm.checkRead(s + "\\-");
+                sm.checkRead(s.concat("\\-"));
         }
 
         return ((WindowsWatchService)watcher).register(this, events, modifiers);
