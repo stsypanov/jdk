@@ -334,7 +334,7 @@ public final class StackWalker {
      *
      */
     static StackWalker getInstance(ContinuationScope contScope) {
-        return getInstance(EnumSet.noneOf(Option.class), contScope);
+        return getInstance(Set.of(), contScope);
     }
 
     /**

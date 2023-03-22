@@ -1724,7 +1724,7 @@ public class ModuleDescriptor
          *         or this builder is for an automatic module
          */
         public Builder requires(String mn) {
-            return requires(EnumSet.noneOf(Requires.Modifier.class), mn);
+            return requires(Set.of(), mn);
         }
 
         /**

@@ -2850,7 +2850,7 @@ public final class Files {
         throws IOException
     {
         return walkFileTree(start,
-                            EnumSet.noneOf(FileVisitOption.class),
+                            Set.of(),
                             Integer.MAX_VALUE,
                             visitor);
     }

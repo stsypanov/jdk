@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -158,7 +158,7 @@ interface LiveStackFrame extends StackFrame {
      * denies access to {@code RuntimePermission("liveStackFrames")}
      */
     public static StackWalker getStackWalker() {
-        return getStackWalker(EnumSet.noneOf(StackWalker.Option.class));
+        return getStackWalker(Set.of());
     }
 
     /**
@@ -218,7 +218,7 @@ interface LiveStackFrame extends StackFrame {
      * denies access to {@code RuntimePermission("liveStackFrames")}
      */
     public static StackWalker getStackWalker(Continuation continuation) {
-        return getStackWalker(EnumSet.noneOf(StackWalker.Option.class), continuation.getScope(), continuation);
+        return getStackWalker(Set.of(), continuation.getScope(), continuation);
     }
 
     /**

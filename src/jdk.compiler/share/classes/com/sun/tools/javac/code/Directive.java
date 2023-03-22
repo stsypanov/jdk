@@ -111,7 +111,7 @@ public abstract class Directive implements ModuleElement.Directive {
         public final Set<ExportsFlag> flags;
 
         public ExportsDirective(PackageSymbol packge, List<ModuleSymbol> modules) {
-            this(packge, modules, EnumSet.noneOf(ExportsFlag.class));
+            this(packge, modules, Set.of());
         }
 
         public ExportsDirective(PackageSymbol packge, List<ModuleSymbol> modules, Set<ExportsFlag> flags) {
@@ -284,7 +284,7 @@ public abstract class Directive implements ModuleElement.Directive {
         public final Set<RequiresFlag> flags;
 
         public RequiresDirective(ModuleSymbol module) {
-            this(module, EnumSet.noneOf(RequiresFlag.class));
+            this(module, Set.of());
         }
 
         public RequiresDirective(ModuleSymbol module, Set<RequiresFlag> flags) {

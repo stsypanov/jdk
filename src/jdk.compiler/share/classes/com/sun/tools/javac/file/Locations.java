@@ -531,7 +531,7 @@ public class Locations {
         protected BasicLocationHandler(Location location, Option... options) {
             this.location = location;
             this.options = options.length == 0
-                    ? EnumSet.noneOf(Option.class)
+                    ? Set.of()
                     : EnumSet.copyOf(Arrays.asList(options));
         }
 

@@ -171,7 +171,7 @@ public class Continuation {
      * @return a new StackWalker
      */
     public StackWalker stackWalker() {
-        return stackWalker(EnumSet.noneOf(StackWalker.Option.class));
+        return stackWalker(Set.of());
     }
 
     /**
