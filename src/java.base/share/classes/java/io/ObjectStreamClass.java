@@ -61,6 +61,7 @@ import jdk.internal.reflect.Reflection;
 import jdk.internal.reflect.ReflectionFactory;
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.access.JavaSecurityAccess;
+import jdk.internal.util.ArraysSupport;
 import jdk.internal.util.ByteArray;
 import sun.reflect.misc.ReflectUtil;
 
@@ -127,7 +128,7 @@ public final class ObjectStreamClass implements Serializable {
     /** name of class represented by this descriptor */
     private String name;
     /** serialVersionUID of represented class (null if not computed yet) */
-    private volatile Long suid;
+    private Long suid;
 
     /** true if represents dynamic proxy class */
     private boolean isProxy;
@@ -280,12 +281,12 @@ public final class ObjectStreamClass implements Serializable {
      */
     @SuppressWarnings("removal")
     public long getSerialVersionUID() {
-        // REMIND: synchronize instead of relying on volatile?
+        Long suid = this.suid;
         if (suid == null) {
             if (isRecord)
                 return 0L;
 
-            suid = AccessController.doPrivileged(
+            this.suid = suid = AccessController.doPrivileged(
                 new PrivilegedAction<Long>() {
                     public Long run() {
                         return computeDefaultSUID(cl);
@@ -293,7 +294,7 @@ public final class ObjectStreamClass implements Serializable {
                 }
             );
         }
-        return suid.longValue();
+        return suid;
     }
 
     /**
@@ -1235,8 +1236,9 @@ public final class ObjectStreamClass implements Serializable {
      */
     ClassDataSlot[] getClassDataLayout() throws InvalidClassException {
         // REMIND: synchronize instead of relying on volatile?
+        ClassDataSlot[] dataLayout = this.dataLayout;
         if (dataLayout == null) {
-            dataLayout = getClassDataLayout0();
+            this.dataLayout = dataLayout = getClassDataLayout0();
         }
         return dataLayout;
     }
@@ -1291,8 +1293,7 @@ public final class ObjectStreamClass implements Serializable {
         }
 
         // order slots from superclass -> subclass
-        Collections.reverse(slots);
-        return slots.toArray(new ClassDataSlot[slots.size()]);
+        return ArraysSupport.reverse(slots.<ClassDataSlot>toArray(new ClassDataSlot[0]));
     }
 
     /**
@@ -1755,13 +1756,8 @@ public final class ObjectStreamClass implements Serializable {
                  * Serializable for array classes.
                  */
                 Class<?>[] interfaces = cl.getInterfaces();
-                String[] ifaceNames = new String[interfaces.length];
-                for (int i = 0; i < interfaces.length; i++) {
-                    ifaceNames[i] = interfaces[i].getName();
-                }
-                Arrays.sort(ifaceNames);
-                for (int i = 0; i < ifaceNames.length; i++) {
-                    dout.writeUTF(ifaceNames[i]);
+                for (Class<?> i : interfaces) {
+                  dout.writeUTF(i.getName());
                 }
             }
 
@@ -1775,8 +1771,7 @@ public final class ObjectStreamClass implements Serializable {
                     return ms1.name.compareTo(ms2.name);
                 }
             });
-            for (int i = 0; i < fieldSigs.length; i++) {
-                MemberSignature sig = fieldSigs[i];
+            for (MemberSignature sig : fieldSigs) {
                 int mods = sig.member.getModifiers() &
                     (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED |
                      Modifier.STATIC | Modifier.FINAL | Modifier.VOLATILE |
@@ -1806,8 +1801,7 @@ public final class ObjectStreamClass implements Serializable {
                     return ms1.signature.compareTo(ms2.signature);
                 }
             });
-            for (int i = 0; i < consSigs.length; i++) {
-                MemberSignature sig = consSigs[i];
+            for (MemberSignature sig : consSigs) {
                 int mods = sig.member.getModifiers() &
                     (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED |
                      Modifier.STATIC | Modifier.FINAL |
@@ -1833,8 +1827,7 @@ public final class ObjectStreamClass implements Serializable {
                     return comp;
                 }
             });
-            for (int i = 0; i < methSigs.length; i++) {
-                MemberSignature sig = methSigs[i];
+            for (MemberSignature sig : methSigs) {
                 int mods = sig.member.getModifiers() &
                     (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED |
                      Modifier.STATIC | Modifier.FINAL |
