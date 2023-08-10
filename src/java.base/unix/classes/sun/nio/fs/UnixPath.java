@@ -36,7 +36,6 @@ import java.nio.file.ProviderMismatchException;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.nio.file.spi.FileSystemProvider;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -44,7 +43,6 @@ import jdk.internal.access.JavaLangAccess;
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.util.ArraysSupport;
 
-import static sun.nio.fs.UnixConstants.*;
 import static sun.nio.fs.UnixNativeDispatcher.*;
 
 /**
@@ -689,9 +687,8 @@ class UnixPath implements Path {
 
     @Override
     public boolean startsWith(Path other) {
-        if (!(Objects.requireNonNull(other) instanceof UnixPath))
+        if (!(Objects.requireNonNull(other) instanceof UnixPath that))
             return false;
-        UnixPath that = (UnixPath)other;
 
         // other path is longer
         if (that.path.length > path.length)
@@ -702,7 +699,7 @@ class UnixPath implements Path {
 
         // other path has no name elements
         if (thatOffsetCount == 0 && this.isAbsolute()) {
-            return that.isEmpty() ? false : true;
+            return !that.isEmpty();
         }
 
         // given path has more elements that this path
@@ -716,10 +713,10 @@ class UnixPath implements Path {
         }
 
         // check offsets of elements match
-        for (int i=0; i<thatOffsetCount; i++) {
-            Integer o1 = offsets[i];
-            Integer o2 = that.offsets[i];
-            if (!o1.equals(o2))
+        int[] offsets = this.offsets;
+        int[] thatOffsets = that.offsets;
+        for (int i = 0; i < thatOffsetCount; i++) {
+            if (offsets[i] != thatOffsets[i])
                 return false;
         }
 
@@ -732,10 +729,7 @@ class UnixPath implements Path {
         }
 
         // final check that match is on name boundary
-        if (i < path.length && this.path[i] != '/')
-            return false;
-
-        return true;
+      return i >= path.length || path[i] == '/';
     }
 
     @Override
