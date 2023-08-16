@@ -105,7 +105,7 @@ class UnixUriUtils {
      */
     static URI toUri(UnixPath up) {
         byte[] path = up.toAbsolutePath().asByteArray();
-        StringBuilder sb = new StringBuilder("file:///");
+        StringBuilder sb = new StringBuilder(path.length + 8).append("file:///");
         assert path[0] == '/';
         HexFormat hex = HexFormat.of().withUpperCase();
         for (int i=1; i<path.length; i++) {
