@@ -40,7 +40,7 @@ import sun.reflect.generics.visitor.Reifier;
 public class MethodRepository extends ConstructorRepository {
 
     /** The generic return type info.  Lazily initialized. */
-    private volatile Type returnType;
+    private Type returnType;
 
  // private, to enforce use of static factory
     private MethodRepository(String rawSig, GenericsFactory f) {

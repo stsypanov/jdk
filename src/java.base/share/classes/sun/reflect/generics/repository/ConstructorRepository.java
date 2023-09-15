@@ -44,10 +44,10 @@ public class ConstructorRepository
     extends GenericDeclRepository<MethodTypeSignature> {
 
     /** The generic parameter types.  Lazily initialized. */
-    private volatile Type[] parameterTypes;
+    private Type[] parameterTypes;
 
     /** The generic exception types.  Lazily initialized. */
-    private volatile Type[] exceptionTypes;
+    private Type[] exceptionTypes;
 
     // protected, to enforce use of static factory yet allow subclassing
     protected ConstructorRepository(String rawSig, GenericsFactory f) {

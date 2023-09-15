@@ -45,7 +45,7 @@ public abstract class GenericDeclRepository<S extends Signature>
     public static final TypeVariable<?>[] EMPTY_TYPE_VARS = new TypeVariable<?>[0];
 
     /** The formal type parameters.  Lazily initialized. */
-    private volatile TypeVariable<?>[] typeParameters;
+    private TypeVariable<?>[] typeParameters;
 
     protected GenericDeclRepository(String rawSig, GenericsFactory f) {
         super(rawSig, f);

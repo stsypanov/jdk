@@ -43,10 +43,10 @@ public class ClassRepository extends GenericDeclRepository<ClassSignature> {
     public static final ClassRepository NONE = ClassRepository.make("Ljava/lang/Object;", null);
 
     /** The generic superclass info.  Lazily initialized. */
-    private volatile Type superclass;
+    private Type superclass;
 
     /** The generic superinterface info.  Lazily initialized. */
-    private volatile Type[] superInterfaces;
+    private Type[] superInterfaces;
 
     // private, to enforce use of static factory
     private ClassRepository(String rawSig, GenericsFactory f) {
