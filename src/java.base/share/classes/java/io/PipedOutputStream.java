@@ -100,10 +100,10 @@ public class PipedOutputStream extends OutputStream {
         } else if (sink != null || snk.connected) {
             throw new IOException("Already connected");
         }
-        sink = snk;
         snk.in = -1;
         snk.out = 0;
         snk.connected = true;
+        sink = snk;
     }
 
     /**
@@ -162,7 +162,7 @@ public class PipedOutputStream extends OutputStream {
      * @throws    IOException {@inheritDoc}
      */
     @Override
-    public synchronized void flush() throws IOException {
+    public void flush() throws IOException {
         var sink = this.sink;
         if (sink != null) {
             synchronized (sink) {
