@@ -402,10 +402,11 @@ public class PushbackInputStream extends FilterInputStream {
     }
 
     private void implClose() throws IOException {
+        var in = this.in;
         if (in != null) {
             in.close();
-            in = null;
             buf = null;
+            this.in = null;
         }
     }
 
